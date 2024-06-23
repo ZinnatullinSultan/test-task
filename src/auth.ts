@@ -1,24 +1,14 @@
-import axios, {type AxiosInstance } from 'axios';
-
-// Создание экземпляра axios с базовыми настройками
-const apiClient: AxiosInstance = axios.create({
-  baseURL: 'https://zinnatullin969.amocrm.ru/api/v4', // замените на ваш поддомен amoCRM
-  headers: {
-    'Content-Type': 'application/json'
+async function fetchLeads(token: string) {
+  const apiUrl = 'https://zinnatullin969.amocrm.ru/api/v4/leads';
+  const response = await fetch(apiUrl, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+  if (!response.ok) {
+    throw new Error('Failed to fetch leads');
   }
-});
-
-// Функция для установки токена
-export function setAuthToken(token: string): void {
-  apiClient.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-}
-
-// Пример функции для запроса к amoCRM
-export async function getContacts(): Promise<any> {
-  try {
-    const response = await apiClient.get('/contacts');
-    return response.data;
-  } catch (error) {
-    throw new Error(`Error fetching contacts: ${error}`);
-  }
+  const data = await response.json();
+  console.log(data);
+  return data._embedded.leads; // Assuming data structure matches amoCRM API response
 }
