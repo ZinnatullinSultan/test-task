@@ -6,7 +6,13 @@ import { useLeadsStore } from '@/stores/leads';
 
 const leadsStore = useLeadsStore()
 const searchQuery = ref<string>('')
-
+const isLoading = ref<boolean>(false)
+const searching = () => {
+  isLoading.value = true
+  setTimeout(() => {
+    isLoading.value = false
+  }, 2000)
+}
 const filteredLeads = computed(() => {
   return leadsStore.getLeadByName(searchQuery.value).value;
 });
@@ -21,14 +27,20 @@ const filteredLeads = computed(() => {
             v-model="searchQuery"
             placeholder="Найти..."
             class="transactions__search"
+            @input="searching"
           />
         </a-space>
       </template>
-      <AppTable />
+      <a-spin :spinning="isLoading">
+        <AppTable />
+      </a-spin>
     </a-card>
   </section>
 </template>
 <style scoped>
+.spin-state {
+  margin-top: 16px;
+}
 .transactions__card {
   margin: 0 auto;
   max-width: 1420px;
