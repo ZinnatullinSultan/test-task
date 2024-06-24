@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import AppTable from './AppTable.vue'
 
-import { ref } from 'vue'
-const value = ref<string>('')
+import { ref, computed } from 'vue'
+import { useLeadsStore } from '@/stores/leads';
 
-const onSearch = (searchValue: string) => {
-  console.log('use value', searchValue)
-  console.log('or use this.value', value.value)
-}
+const leadsStore = useLeadsStore()
+const searchQuery = ref<string>('')
+
+const filteredLeads = computed(() => {
+  return leadsStore.getLeadByName(searchQuery.value).value;
+});
 </script>
 
 <template>
@@ -16,10 +18,9 @@ const onSearch = (searchValue: string) => {
       <template #extra>
         <a-space direction="vertical">
           <a-input-search
-            v-model:value="value"
+            v-model="searchQuery"
             placeholder="Найти..."
             class="transactions__search"
-            @search="onSearch"
           />
         </a-space>
       </template>

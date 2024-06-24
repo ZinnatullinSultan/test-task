@@ -1,51 +1,20 @@
 <script setup lang="ts">
 import { UserOutlined, PhoneOutlined, MailOutlined } from '@ant-design/icons-vue'
+import { useLeadsStore } from '@/stores/leads';
+import type { IColumn } from '@/interfaces';
 
-const columns = [
+const leadsStore = useLeadsStore()
+
+const columns: IColumn[] = [
   { title: 'Название', dataIndex: 'title', key: 'title', fixed: true },
   { title: 'Бюджет', dataIndex: 'budget', key: 'budget' },
   { title: 'Статус', dataIndex: 'status', key: 'status' },
   { title: 'Ответственный', dataIndex: 'name', key: 'name' },
   { title: 'Дата создания', dataIndex: 'date', key: 'date' }
 ]
-
-const data = [
-  {
-    key: 1,
-    title: 'John Brown',
-    budget: 32,
-    status: ['Принимают решение'],
-    name: 'My ',
-    date: '2022-01-01'
-  },
-  {
-    key: 2,
-    title: 'Jim Green',
-    budget: 42,
-    status: ['Закрыто и не реализовано'],
-    name: 'My name is Jim ',
-    date: '2022-01-01'
-  },
-  {
-    key: 3,
-    title: 'Joe Black',
-    budget: 32,
-    status: ['Принимают решение'],
-    name: 'My name is ',
-    date: '2022-01-01'
-  },
-  {
-    key: 4,
-    title: 'Joe Black12',
-    budget: 322,
-    status: ['Переговоры'],
-    name: 'My name is Joe Black',
-    date: '2022-01-01'
-  }
-]
 </script>
 <template>
-  <a-table :scroll="{ x: 1150 }" :columns="columns" :data-source="data" :pagination="false">
+  <a-table :scroll="{ x: 1150 }" :columns="columns" :data-source="leadsStore.leads" :pagination="false">
     <template #bodyCell="{ column, record }">
       <template v-if="column.key === 'name'">
         <user-outlined class="user-icon" /> {{ record.name }}
@@ -71,16 +40,19 @@ const data = [
     </template>
     <template #expandedRowRender="{ record }">
       <p class="expanded-row">
-        <template v-if="true">
+        <template v-if="record.contacts">
           <user-outlined class="user-icon user-icon--gray" />
-          {{ record.title }}
-          <a href="tel:+7-999-999-99-99">
+          {{ record.contacts[0] }}
+          <a :href="`tel:${record.contacts[1]}`">
             <PhoneOutlined class="icon phone-icon" />
           </a>
           <span class="line">|</span>
-          <a href="mailto:dCkOQ@example.com">
+          <a :href="`mailto:${record.contacts[2]}`">
             <MailOutlined class="icon" />
           </a>
+        </template>
+        <template v-else>
+          <p class="expanded-row">Без контакта</p>
         </template>
       </p>
     </template>
