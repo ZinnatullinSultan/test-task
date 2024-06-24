@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { UserOutlined, PhoneOutlined, MailOutlined } from '@ant-design/icons-vue'
-import { useLeadsStore } from '@/stores/leads';
-import type { IColumn } from '@/interfaces';
+import type { IColumn, ILead } from '@/interfaces';
 
-const leadsStore = useLeadsStore()
+const props = defineProps<{
+  filteredLeads: ILead[];
+}>();
 
 const columns: IColumn[] = [
   { title: 'Название', dataIndex: 'title', key: 'title', fixed: true },
@@ -14,7 +15,7 @@ const columns: IColumn[] = [
 ]
 </script>
 <template>
-  <a-table :scroll="{ x: 1150 }" :columns="columns" :data-source="leadsStore.leads" :pagination="false">
+  <a-table :scroll="{ x: 1150 }" :columns="columns" :data-source="props.filteredLeads" :pagination="false">
     <template #bodyCell="{ column, record }">
       <template v-if="column.key === 'name'">
         <user-outlined class="user-icon" /> {{ record.name }}

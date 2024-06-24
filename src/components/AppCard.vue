@@ -1,21 +1,29 @@
 <script setup lang="ts">
 import AppTable from './AppTable.vue'
 
-import { ref, computed } from 'vue'
-import { useLeadsStore } from '@/stores/leads';
+import { ref } from 'vue'
+import { useLeadsStore } from '@/stores/leads'
+import type { ILead } from '@/interfaces'
 
 const leadsStore = useLeadsStore()
+
 const searchQuery = ref<string>('')
+
+const filteredLeads = ref<ILead[]>(leadsStore.leads)
+
 const isLoading = ref<boolean>(false)
 const searching = () => {
   isLoading.value = true
-  setTimeout(() => {
-    isLoading.value = false
-  }, 2000)
+  if (searchQuery.value) {
+    filteredLeads.value = leadsStore.leads.filter((item) =>
+      item.title.toLowerCase().includes(searchQuery.value.toLowerCase())
+    )
+  } else {
+    filteredLeads.value = leadsStore.leads
+  }
+
+  isLoading.value = false
 }
-const filteredLeads = computed(() => {
-  return leadsStore.getLeadByName(searchQuery.value).value;
-});
 </script>
 
 <template>
@@ -24,7 +32,7 @@ const filteredLeads = computed(() => {
       <template #extra>
         <a-space direction="vertical">
           <a-input-search
-            v-model="searchQuery"
+            v-model:value="searchQuery"
             placeholder="Найти..."
             class="transactions__search"
             @input="searching"
@@ -32,7 +40,7 @@ const filteredLeads = computed(() => {
         </a-space>
       </template>
       <a-spin :spinning="isLoading">
-        <AppTable />
+        <AppTable :filteredLeads="filteredLeads" />
       </a-spin>
     </a-card>
   </section>
